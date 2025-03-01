@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MyBookshelf Share{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{{ url_for('index') }}" class="navbar-brand">MyBookshelf Share</a>
+            <ul class="navbar-nav">
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a href="{{ url_for('books.search') }}" class="nav-link">書籍検索</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('users.bookshelf', username=current_user.username) }}" class="nav-link">マイ本棚</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('users.discover') }}" class="nav-link">発見</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('users.profile', username=current_user.username) }}" class="nav-link">プロフィール</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('auth.logout') }}" class="nav-link">ログアウト</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a href="{{ url_for('auth.login') }}" class="nav-link">ログイン</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('auth.register') }}" class="nav-link">登録</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for message in messages %}
+            <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 MyBookshelf Share</p>
+        </div>
+    </footer>
+
+    <!-- jQueryのCDNリンクを追加 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 

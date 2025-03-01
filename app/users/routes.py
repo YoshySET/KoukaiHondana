@@ -1,0 +1,122 @@
+from flask import render_template, redirect, url_for, flash, request
+from flask_login import login_required, current_user
+from app import db
+from app.users import bp
+from app.users.forms import EditProfileForm
+from app.models import User, Book, user_books
+from sqlalchemy import and_
+
+@bp.route('/<username>')
+def profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    
+    # プライバシー設定のチェック
+    can_view = True
+    if user.privacy_setting == 'private' and user != current_user:
+        can_view = False
+    elif user.privacy_setting == 'friends' and (not current_user.is_authenticated or not current_user.is_following(user)):
+        can_view = False
+    
+    return render_template('users/profile.html', user=user, can_view=can_view)
+
+@bp.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm(current_user.username, current_user.email)
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        current_user.about_me = form.about_me.data
+        current_user.privacy_setting = form.privacy_setting.data
+        db.session.commit()
+        flash('プロフィールを更新しました！')
+        return redirect(url_for('users.profile', username=current_user.username))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        form.about_me.data = current_user.about_me
+        form.privacy_setting.data = current_user.privacy_setting
+    return render_template('users/edit_profile.html', title='プロフィール編集', form=form)
+
+@bp.route('/<username>/bookshelf')
+def bookshelf(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    
+    # プライバシー設定のチェック
+    can_view = True
+    if user.privacy_setting == 'private' and user != current_user:
+        can_view = False
+    elif user.privacy_setting == 'friends' and (not current_user.is_authenticated or not current_user.is_following(user)):
+        can_view = False
+    
+    # カテゴリフィルター
+    category = request.args.get('category', 'all')
+    
+    # 本棚データの取得
+    if can_view:
+        if category != 'all':
+            books = Book.query.join(user_books).filter(
+                and_(user_books.c.user_id == user.id, Book.categories.like(f'%{category}%'))
+            ).all()
+        else:
+            books = user.books
+    else:
+        books = []
+    
+    # カテゴリリストの取得
+    categories = set()
+    for book in user.books:
+        if book.categories:
+            for cat in book.categories.split(', '):
+                categories.add(cat)
+    
+    return render_template('users/bookshelf.html', user=user, books=books, 
+                          can_view=can_view, categories=sorted(categories), 
+                          selected_category=category)
+
+@bp.route('/follow/<username>')
+@login_required
+def follow(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    if user == current_user:
+        flash('自分自身をフォローすることはできません！')
+        return redirect(url_for('users.profile', username=username))
+    current_user.follow(user)
+    db.session.commit()
+    flash(f'{username}さんをフォローしました！')
+    return redirect(url_for('users.profile', username=username))
+
+@bp.route('/unfollow/<username>')
+@login_required
+def unfollow(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    if user == current_user:
+        flash('自分自身のフォローを解除することはできません！')
+        return redirect(url_for('users.profile', username=username))
+    current_user.unfollow(user)
+    db.session.commit()
+    flash(f'{username}さんのフォローを解除しました。')
+    return redirect(url_for('users.profile', username=username))
+
+@bp.route('/discover')
+@login_required
+def discover():
+    # 同じ本を持っているユーザーを見つける
+    similar_users = User.query.join(
+        user_books, User.id == user_books.c.user_id
+    ).filter(
+        user_books.c.book_id.in_([book.id for book in current_user.books]),
+        User.id != current_user.id
+    ).distinct().all()
+    
+    # おすすめの本を見つける（同じ本を持つユーザーの本棚から）
+    recommended_books = []
+    for user in similar_users:
+        for book in user.books:
+            if book not in current_user.books and book not in recommended_books:
+                recommended_books.append(book)
+                if len(recommended_books) >= 10:  # 最大10冊まで
+                    break
+    
+    return render_template('users/discover.html', similar_users=similar_users, 
+                          recommended_books=recommended_books) 

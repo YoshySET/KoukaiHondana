@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}書籍検索 - MyBookshelf Share{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <h1>書籍検索</h1>
+    <form method="post" action="" class="search-form">
+        {{ form.hidden_tag() }}
+        <div class="form-group search-input">
+            {{ form.query(class="form-control", placeholder="タイトル、著者、ISBNなどで検索") }}
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+
+    {% if results %}
+    <div class="search-results">
+        <h2>検索結果</h2>
+        <div class="book-grid">
+            {% for book in results %}
+            <div class="book-card">
+                <div class="book-cover">
+                    {% if book.imageLinks and book.imageLinks.thumbnail %}
+                    <img src="{{ book.imageLinks.thumbnail }}" alt="{{ book.title }}">
+                    {% else %}
+                    <div class="no-cover">表紙なし</div>
+                    {% endif %}
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">{{ book.title }}</h3>
+                    <p class="book-authors">
+                        {% if book.authors %}
+                        {{ book.authors|join(', ') }}
+                        {% else %}
+                        著者不明
+                        {% endif %}
+                    </p>
+                    <p class="book-publisher">
+                        {% if book.publisher %}
+                        {{ book.publisher }}
+                        {% endif %}
+                        {% if book.publishedDate %}
+                        ({{ book.publishedDate }})
+                        {% endif %}
+                    </p>
+                    <div class="book-actions">
+                        <a href="{{ url_for('books.add_book', google_id=book.id) }}" class="btn btn-sm btn-primary">本棚に追加</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% elif request.method == 'POST' or request.args.get('query') %}
+    <div class="no-results">
+        <p>検索結果が見つかりませんでした。別のキーワードで試してみてください。</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}MyBookshelf Share - 本棚を共有しよう{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="hero-content">
+        <h1>あなたの本棚を共有しよう</h1>
+        <p>MyBookshelf Shareで読書体験をもっと豊かに</p>
+        {% if not current_user.is_authenticated %}
+        <div class="hero-buttons">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">今すぐ登録</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">ログイン</a>
+        </div>
+        {% else %}
+        <div class="hero-buttons">
+            <a href="{{ url_for('books.search') }}" class="btn btn-primary">書籍を検索</a>
+            <a href="{{ url_for('users.bookshelf', username=current_user.username) }}" class="btn btn-secondary">マイ本棚を見る</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <i class="fas fa-book feature-icon"></i>
+        <h3>簡単に本を登録</h3>
+        <p>タイトルやISBNを入力するだけで、書籍情報を自動取得。手間なく本棚を作成できます。</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-share-alt feature-icon"></i>
+        <h3>本棚をシェア</h3>
+        <p>あなたの読書記録を友達や他のユーザーと共有。新しい読書コミュニティを形成しましょう。</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-lightbulb feature-icon"></i>
+        <h3>新しい本との出会い</h3>
+        <p>同じ本を持つユーザーの本棚から、あなたにぴったりの次の一冊を発見できます。</p>
+    </div>
+</div>
+
+<div class="how-it-works">
+    <h2>使い方</h2>
+    <div class="steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <h3>アカウント登録</h3>
+            <p>簡単な情報入力で、すぐに始められます。</p>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <h3>本を検索して追加</h3>
+            <p>タイトルやISBNで検索し、ワンクリックで本棚に追加。</p>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <h3>レビューを書く</h3>
+            <p>読んだ本の感想や評価を記録しましょう。</p>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <h3>本棚をシェア</h3>
+            <p>友達や他のユーザーとあなたの本棚を共有。</p>
+        </div>
+    </div>
+</div>
+{% endblock %} 

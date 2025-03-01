@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} - MyBookshelf Share{% endblock %}
+
+{% block content %}
+<div class="book-detail">
+    <div class="book-header">
+        <div class="book-cover">
+            {% if book.thumbnail %}
+            <img src="{{ book.thumbnail }}" alt="{{ book.title }}">
+            {% else %}
+            <div class="no-cover">表紙なし</div>
+            {% endif %}
+        </div>
+        <div class="book-header-info">
+            <h1>{{ book.title }}</h1>
+            <p class="book-authors">{{ book.authors }}</p>
+            <p class="book-publisher">
+                {% if book.publisher %}
+                {{ book.publisher }}
+                {% endif %}
+                {% if book.published_date %}
+                ({{ book.published_date }})
+                {% endif %}
+            </p>
+            {% if book.categories %}
+            <div class="book-categories">
+                {% for category in book.categories.split(', ') %}
+                <span class="category-tag">{{ category }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if current_user.is_authenticated %}
+            <div class="book-actions">
+                {% if book in current_user.books %}
+                <a href="{{ url_for('books.review_book', book_id=book.id) }}" class="btn btn-secondary">レビューを書く</a>
+                <form action="{{ url_for('books.remove_book', book_id=book.id) }}" method="post" class="inline-form">
+                    <button type="submit" class="btn btn-danger">本棚から削除</button>
+                </form>
+                {% else %}
+                <a href="{{ url_for('books.add_book', google_id=book.google_id) }}" class="btn btn-primary">本棚に追加</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="book-content">
+        {% if book.description %}
+        <div class="book-description">
+            <h2>概要</h2>
+            <p>{{ book.description }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="book-details">
+            <h2>詳細情報</h2>
+            <table class="details-table">
+                {% if book.isbn %}
+                <tr>
+                    <th>ISBN</th>
+                    <td>{{ book.isbn }}</td>
+                </tr>
+                {% endif %}
+                {% if book.page_count %}
+                <tr>
+                    <th>ページ数</th>
+                    <td>{{ book.page_count }}</td>
+                </tr>
+                {% endif %}
+                {% if book.language %}
+                <tr>
+                    <th>言語</th>
+                    <td>{{ book.language }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+        
+        <div class="book-owners">
+            <h2>この本を持っているユーザー</h2>
+            {% if book.users.count() > 0 %}
+            <div class="user-list">
+                {% for user in book.users %}
+                <a href="{{ url_for('users.profile', username=user.username) }}" class="user-link">
+                    <div class="user-avatar">{{ user.username[0] }}</div>
+                    <span>{{ user.username }}</span>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>この本を持っているユーザーはまだいません。</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}の本棚{% endblock %}
+
+{% block content %}
+<div class="bookshelf-container">
+    <div class="bookshelf-header">
+        <h1>{{ user.username }}の本棚</h1>
+        {% if user == current_user %}
+        <a href="{{ url_for('books.search') }}" class="btn btn-primary">本を追加</a>
+        {% endif %}
+    </div>
+    
+    {% if can_view %}
+    <div class="bookshelf-filters">
+        <div class="category-filter">
+            <label for="category-select">カテゴリ:</label>
+            <select id="category-select" onchange="filterByCategory(this.value)">
+                <option value="all" {% if selected_category == 'all' %}selected{% endif %}>すべて</option>
+                {% for category in categories %}
+                <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    
+    {% if books %}
+    <div class="book-grid">
+        {% for book in books %}
+        <div class="book-card">
+            <a href="{{ url_for('books.book_detail', book_id=book.id) }}">
+                <div class="book-cover">
+                    {% if book.thumbnail %}
+                    <img src="{{ book.thumbnail }}" alt="{{ book.title }}">
+                    {% else %}
+                    <div class="no-cover">表紙なし</div>
+                    {% endif %}
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">{{ book.title }}</h3>
+                    <p class="book-authors">{{ book.authors }}</p>
+                    
+                    {% if user == current_user %}
+                    <div class="book-actions">
+                        <a href="{{ url_for('books.review_book', book_id=book.id) }}" class="btn btn-sm btn-secondary">レビュー</a>
+                        <form action="{{ url_for('books.remove_book', book_id=book.id) }}" method="post" class="inline-form">
+                            <button type="submit" class="btn btn-sm btn-danger">削除</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-books">
+        <p>まだ本が登録されていません。</p>
+        {% if user == current_user %}
+        <a href="{{ url_for('books.search') }}" class="btn btn-primary">本を追加する</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="private-bookshelf">
+        <p>このユーザーの本棚は非公開に設定されています。</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function filterByCategory(category) {
+    window.location.href = "{{ url_for('users.bookshelf', username=user.username) }}" + "?category=" + category;
+}
+</script>
+{% endblock %} 
