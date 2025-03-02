@@ -1,5 +1,6 @@
 // jQueryを使用したフラッシュメッセージの自動非表示
 $(document).ready(function() {
+  // フラッシュメッセージの自動非表示
   $('.flash-message').each(function() {
     const $message = $(this);
     setTimeout(function() {
@@ -22,20 +23,6 @@ $(document).ready(function() {
     }, 100 * index);
   });
   
-  // カテゴリフィルターの変更イベント
-  $('#category-select').on('change', function() {
-    const category = $(this).val();
-    const username = $(this).data('username');
-    window.location.href = `/users/${username}/bookshelf?category=${category}`;
-  });
-  
-  // 評価の星表示
-  $('.rating-select select').on('change', function() {
-    const rating = $(this).val();
-    const stars = '★'.repeat(rating);
-    $(this).siblings('.rating-stars').text(stars);
-  });
-  
   // 検索フォームの送信前にトリム
   $('.search-form').on('submit', function() {
     const query = $(this).find('input[name="query"]');
@@ -45,5 +32,39 @@ $(document).ready(function() {
   // モバイルメニューのトグル
   $('.mobile-menu-toggle').on('click', function() {
     $('.navbar-nav').slideToggle();
+  });
+  
+  // 本の削除確認
+  $('.book-delete-form').on('submit', function(e) {
+    e.preventDefault();
+    const $form = $(this);
+    const bookTitle = $form.data('book-title');
+    
+    // ポップアップメッセージを設定
+    $('#popupMessage').text(`「${bookTitle}」を本棚から削除してもよろしいですか？`);
+    
+    // ポップアップを表示
+    $('#confirmPopup').addClass('active');
+    
+    // 確認ボタンのイベントハンドラ
+    $('#popupConfirm').off('click').on('click', function() {
+      // ポップアップを閉じる
+      $('#confirmPopup').removeClass('active');
+      // フォームを送信
+      $form[0].submit();
+    });
+    
+    // キャンセルボタンのイベントハンドラ
+    $('#popupCancel').off('click').on('click', function() {
+      // ポップアップを閉じるだけ
+      $('#confirmPopup').removeClass('active');
+    });
+  });
+  
+  // ポップアップの外側をクリックしても閉じる
+  $('#confirmPopup').on('click', function(e) {
+    if (e.target === this) {
+      $(this).removeClass('active');
+    }
   });
 }); 

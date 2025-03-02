@@ -5,47 +5,38 @@
 {% block content %}
 <div class="search-container">
     <h1>書籍検索</h1>
-    <form method="post" action="" class="search-form">
+    <form method="post" action="{{ url_for('books.search') }}" class="search-form">
         {{ form.hidden_tag() }}
-        <div class="form-group search-input">
-            {{ form.query(class="form-control", placeholder="タイトル、著者、ISBNなどで検索") }}
-            {{ form.submit(class="btn btn-primary") }}
+        <div class="search-input-group">
+            {{ form.query(class="search-input", placeholder="タイトル、著者名、ISBNなどで検索") }}
+            {{ form.submit(class="search-button", value="検索") }}
         </div>
     </form>
-
+    
     {% if results %}
     <div class="search-results">
         <h2>検索結果</h2>
         <div class="book-grid">
             {% for book in results %}
-            <div class="book-card">
-                <div class="book-cover">
-                    {% if book.imageLinks and book.imageLinks.thumbnail %}
-                    <img src="{{ book.imageLinks.thumbnail }}" alt="{{ book.title }}">
-                    {% else %}
-                    <div class="no-cover">表紙なし</div>
-                    {% endif %}
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">{{ book.title }}</h3>
-                    <p class="book-authors">
-                        {% if book.authors %}
-                        {{ book.authors|join(', ') }}
+            <div class="book-card search-result">
+                <a href="{{ url_for('books.view_book', google_id=book.id) }}" class="book-card-link">
+                    <div class="book-cover">
+                        {% if book.thumbnail %}
+                        <img src="{{ book.thumbnail }}" alt="{{ book.title }}">
                         {% else %}
-                        著者不明
+                        <div class="no-cover">表紙なし</div>
                         {% endif %}
-                    </p>
-                    <p class="book-publisher">
-                        {% if book.publisher %}
-                        {{ book.publisher }}
-                        {% endif %}
-                        {% if book.publishedDate %}
-                        ({{ book.publishedDate }})
-                        {% endif %}
-                    </p>
-                    <div class="book-actions">
-                        <a href="{{ url_for('books.add_book', google_id=book.id) }}" class="btn btn-sm btn-primary">本棚に追加</a>
                     </div>
+                    <div class="book-info">
+                        <h3 class="book-title">{{ book.title }}</h3>
+                        <p class="book-authors">{{ book.authors|join(', ') }}</p>
+                        {% if book.publishedDate %}
+                        <p class="book-date">{{ book.publishedDate }}</p>
+                        {% endif %}
+                    </div>
+                </a>
+                <div class="book-actions">
+                    <button class="btn btn-primary add-book-btn" data-google-id="{{ book.id }}">本棚に追加</button>
                 </div>
             </div>
             {% endfor %}
@@ -53,8 +44,83 @@
     </div>
     {% elif request.method == 'POST' or request.args.get('query') %}
     <div class="no-results">
-        <p>検索結果が見つかりませんでした。別のキーワードで試してみてください。</p>
+        <p>検索結果が見つかりませんでした。別のキーワードで試してください。</p>
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 本棚に追加ボタンの処理
+$(document).ready(function() {
+  $('.add-book-btn').on('click', function(e) {
+    e.stopPropagation(); // カードのクリックイベントが発火しないようにする
+    
+    const $btn = $(this);
+    const googleId = $btn.data('google-id');
+    const query = new URLSearchParams(window.location.search).get('query') || '';
+    
+    // ボタンを読み込み中の状態に
+    $btn.prop('disabled', true).text('追加中...');
+    
+    $.ajax({
+      url: `/books/add/${googleId}?query=${encodeURIComponent(query)}`,
+      type: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      success: function(data) {
+        if (data.success) {
+          // 成功時はボタンを追加済みに変更
+          $btn.removeClass('btn-primary').addClass('btn-secondary')
+             .prop('disabled', true).text('追加済み');
+          
+          // フラッシュメッセージを表示
+          const flashHtml = `<div class="flash-message" style="opacity: 1">${data.message}</div>`;
+          $('.flash-messages').append(flashHtml);
+          
+          // 5秒後にフラッシュメッセージを非表示
+          setTimeout(function() {
+            $('.flash-message').last().animate({
+              opacity: 0
+            }, 500, function() {
+              $(this).hide();
+            });
+          }, 5000);
+        }
+      },
+      error: function() {
+        // エラー時はボタンを元に戻す
+        $btn.prop('disabled', false).text('本棚に追加');
+        
+        // エラーメッセージを表示
+        const errorHtml = `<div class="flash-message" style="opacity: 1">エラーが発生しました。再度お試しください。</div>`;
+        $('.flash-messages').append(errorHtml);
+      }
+    });
+  });
+  
+  // ページ読み込み時に既に追加済みの本のボタンを非活性化
+  $.ajax({
+    url: '/books/user_books',
+    type: 'GET',
+    success: function(data) {
+      if (data.books) {
+        // 各本のGoogle IDを確認
+        $('.add-book-btn').each(function() {
+          const $btn = $(this);
+          const googleId = $btn.data('google-id');
+          
+          // ユーザーの本棚に既に存在する場合
+          if (data.books.includes(googleId)) {
+            $btn.removeClass('btn-primary').addClass('btn-secondary')
+               .prop('disabled', true).text('追加済み');
+          }
+        });
+      }
+    }
+  });
+});
+</script>
 {% endblock %} 

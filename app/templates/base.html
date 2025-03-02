@@ -6,7 +6,7 @@
     <title>{% block title %}MyBookshelf Share{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <nav class="navbar">
@@ -61,8 +61,21 @@
         </div>
     </footer>
 
+    <!-- カスタム確認ポップアップ -->
+    <div id="confirmPopup" class="popup-overlay">
+        <div class="popup-container">
+            <div class="popup-title">確認</div>
+            <div class="popup-message" id="popupMessage"></div>
+            <div class="popup-buttons">
+                <button class="popup-btn popup-btn-cancel" id="popupCancel">キャンセル</button>
+                <button class="popup-btn popup-btn-confirm" id="popupConfirm">削除する</button>
+            </div>
+        </div>
+    </div>
+
     <!-- jQueryのCDNリンクを追加 -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html> 

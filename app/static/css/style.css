@@ -131,6 +131,12 @@ body {
   background-color: #C2A478;
 }
 
+.btn-secondary:disabled {
+  background-color: #aaa;
+  color: #fff;
+  cursor: not-allowed;
+}
+
 .btn-danger {
   background-color: var(--danger-color);
 }
@@ -307,30 +313,151 @@ body {
   margin-right: 10px;
 }
 
-/* 書籍検索 */
+/* モダンな検索バー */
 .search-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.search-container h1 {
+  text-align: center;
   margin-bottom: 30px;
+  color: var(--primary-color);
 }
 
 .search-form {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.search-input-group {
+  display: flex;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.search-input-group:focus-within {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
 .search-input {
-  display: flex;
-  gap: 10px;
+  flex: 1;
+  padding: 15px 20px;
+  border: none;
+  font-size: 1.1rem;
+  outline: none;
+  background-color: white;
 }
 
+.search-input::placeholder {
+  color: #aaa;
+}
+
+.search-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0 25px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-button:hover {
+  background-color: #6a3f24;
+}
+
+.search-button::before {
+  content: '\f002';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  margin-right: 8px;
+}
+
+/* 検索結果 */
 .search-results h2 {
   margin-bottom: 20px;
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  border-bottom: 2px solid var(--secondary-color);
+  padding-bottom: 10px;
 }
 
 .no-results {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--light-text);
   background-color: white;
-  padding: 20px;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  text-align: center;
+}
+
+.no-results p {
+  margin-bottom: 15px;
+}
+
+/* 検索結果の書籍カード - サイズ調整 */
+.search-result .book-cover {
+  height: 160px;
+}
+
+.search-result .book-info {
+  padding: 12px;
+}
+
+.search-result .book-title {
+  font-size: 0.95rem;
+}
+
+.search-result .book-authors {
+  font-size: 0.8rem;
+}
+
+.search-result .book-date {
+  font-size: 0.75rem;
+}
+
+.search-result .book-actions {
+  margin-top: 8px;
+}
+
+.search-result .btn {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1200px) {
+  .search-results .book-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .search-results .book-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .search-results .book-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .search-results .book-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* 書籍グリッド */
@@ -514,6 +641,47 @@ body {
   font-weight: bold;
 }
 
+/* レビューセクションのスタイル調整 */
+.book-reviews-section {
+  margin: 2rem 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  padding: 1.5rem 0;
+}
+
+.user-review-section {
+  margin-bottom: 2rem;
+}
+
+.user-review-section h3,
+.public-reviews h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+  border-left: 4px solid #4a6eb5;
+  padding-left: 10px;
+}
+
+.fa-lock {
+  margin-right: 4px;
+  color: #888;
+}
+
+.review-visibility .fa-lock {
+  font-size: 0.9rem;
+  margin-right: 2px;
+}
+
+.fa-globe {
+  margin-right: 4px;
+  color: #4a90e2;
+}
+
+.review-visibility .fa-globe {
+  font-size: 0.9rem;
+  margin-right: 2px;
+}
+
 /* レビューフォーム */
 .review-container {
   max-width: 800px;
@@ -532,268 +700,1325 @@ body {
   border-bottom: 1px solid #eee;
 }
 
-.book-info-compact .book-cover {
-  width: 100px;
-  height: 150px;
+.book-cover-small {
+  width: 80px;
   margin-right: 20px;
 }
 
-.book-info-compact .book-details h2 {
-  margin-bottom: 5px;
+.book-cover-small img {
+  width: 100%;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.book-details-small h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
 }
 
 .rating-select {
-  max-width: 200px;
+  position: relative;
+}
+
+.visibility-options {
+  margin-bottom: 10px;
+}
+
+.radio-option {
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+/* レビュー表示 */
+.book-reviews {
+  margin-top: 40px;
+}
+
+.user-review-section {
+  margin-bottom: 30px;
+}
+
+.review-card {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  margin-bottom: 20px;
+}
+
+.user-review {
+  background-color: #f0f7ff;
+  border-left: 4px solid var(--primary-color);
+}
+
+.review-actions {
+  display: flex;
+  align-items: center;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.reviewer-name {
+  font-weight: 500;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.reviewer-name:hover {
+  text-decoration: underline;
+}
+
+.stars {
+  color: #FFD700;
+  letter-spacing: 2px;
+}
+
+.review-text {
+  margin-bottom: 15px;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.review-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--light-text);
+}
+
+.review-date {
+  font-size: 0.875rem;
+  color: var(--light-text);
+  text-align: right;
+}
+
+.no-review, .no-reviews {
+  text-align: center;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: var(--border-radius);
 }
 
 /* プロフィール */
 .profile-container {
+  max-width: 1000px;
+  margin: 40px auto;
   background-color: white;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  padding: 30px;
-  margin-bottom: 30px;
+  overflow: hidden;
 }
 
 .profile-header {
   display: flex;
-  align-items: center;
-  margin-bottom: 30px;
+  padding: 40px;
+  background: linear-gradient(to right, rgba(125, 76, 43, 0.1), rgba(200, 182, 166, 0.1));
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .profile-avatar {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
   background-color: var(--primary-color);
   color: white;
-  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 30px;
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: bold;
+  margin-right: 40px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 4px solid white;
+  flex-shrink: 0;
+}
+
+.profile-info {
+  flex: 1;
 }
 
 .profile-info h1 {
+  font-size: 2.2rem;
+  color: var(--primary-color);
   margin-bottom: 10px;
 }
 
 .profile-bio {
-  margin-bottom: 10px;
-  color: var(--light-text);
+  font-size: 1.1rem;
+  color: var(--text-color);
+  margin-bottom: 15px;
+  line-height: 1.6;
+  max-width: 600px;
 }
 
 .profile-meta {
-  font-size: 0.875rem;
   color: var(--light-text);
-  margin-bottom: 15px;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.profile-meta::before {
+  content: '\f073';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  margin-right: 8px;
 }
 
 .profile-actions {
-  margin-top: 15px;
+  margin-top: 20px;
+}
+
+.profile-actions .btn {
+  padding: 10px 20px;
+  font-weight: 500;
 }
 
 .profile-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  margin-bottom: 30px;
+  padding: 30px 40px;
+  background-color: white;
 }
 
 .stat-card {
-  background-color: #f5f5f5;
-  padding: 15px;
+  background-color: var(--background-color);
+  padding: 20px;
   border-radius: var(--border-radius);
   text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: var(--primary-color);
+  opacity: 0.7;
+}
+
+.stat-card-link {
+  text-decoration: none;
+  color: var(--text-color);
+  display: block;
+}
+
+.stat-card-link:hover .stat-card {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h3 {
+  font-size: 1.1rem;
+  color: var(--light-text);
+  margin-bottom: 10px;
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: bold;
   color: var(--primary-color);
 }
 
-.stat-label {
-  font-size: 0.875rem;
-  color: var(--light-text);
+.profile-content {
+  padding: 40px;
 }
 
-.profile-books {
-  margin-bottom: 30px;
+.recent-books h2 {
+  font-size: 1.8rem;
+  color: var(--primary-color);
+  margin-bottom: 25px;
+  position: relative;
+  padding-bottom: 10px;
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+.recent-books h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: var(--secondary-color);
+}
+
+.profile-content .book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
 }
 
 .view-all {
-  font-size: 0.875rem;
+  display: inline-block;
+  margin-top: 20px;
   color: var(--primary-color);
   text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+  position: relative;
+  padding-right: 20px;
+}
+
+.view-all::after {
+  content: '\f054';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  transition: transform 0.3s;
 }
 
 .view-all:hover {
-  text-decoration: underline;
+  color: #6a3f24;
 }
 
-.no-books {
-  text-align: center;
-  padding: 30px;
-  background-color: #f5f5f5;
-  border-radius: var(--border-radius);
+.view-all:hover::after {
+  transform: translate(3px, -50%);
 }
 
-.private-profile,
-.private-bookshelf {
-  text-align: center;
-  padding: 30px;
-  background-color: #f5f5f5;
-  border-radius: var(--border-radius);
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 30px 20px;
+  }
+  
+  .profile-avatar {
+    margin-right: 0;
+    margin-bottom: 20px;
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+  }
+  
+  .profile-bio {
+    max-width: 100%;
+  }
+  
+  .profile-stats {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+  
+  .profile-content {
+    padding: 20px;
+  }
+  
+  .profile-content .book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
 }
 
-/* 本棚 */
-.bookshelf-container {
+/* カスタム確認ポップアップ */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.popup-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.popup-container {
   background-color: white;
   border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px;
+  padding: 25px;
+  text-align: center;
+  transform: translateY(-20px);
+  transition: transform 0.3s;
 }
 
-.bookshelf-header {
+.popup-overlay.active .popup-container {
+  transform: translateY(0);
+}
+
+.popup-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: var(--primary-color);
+}
+
+.popup-message {
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.popup-btn {
+  padding: 8px 20px;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border: none;
+}
+
+.popup-btn-cancel {
+  background-color: #f1f1f1;
+  color: var(--text-color);
+}
+
+.popup-btn-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+.popup-btn-confirm {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.popup-btn-confirm:hover {
+  background-color: #c82333;
+}
+
+/* 詳細情報とユーザーリストのスタイル */
+.book-details-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .book-details-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.book-details h2,
+.book-owners h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+  border-left: 4px solid #4a6eb5;
+  padding-left: 10px;
+}
+
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.details-table th,
+.details-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.details-table th {
+  text-align: left;
+  width: 30%;
+  color: var(--light-text);
+}
+
+.user-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.user-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-color);
+  background-color: #f5f5f5;
+  padding: 8px 15px;
+  border-radius: 20px;
+  transition: background-color 0.3s;
+}
+
+.user-link:hover {
+  background-color: #e0e0e0;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.empty-review {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+}
+
+.empty-review p {
+  margin-bottom: 15px;
+  color: var(--light-text);
+}
+
+.empty-review .btn {
+  margin-top: 10px;
+}
+
+/* レビュー一覧ページのスタイル */
+.reviews-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.reviews-header {
+  margin-bottom: 30px;
+}
+
+.book-info-compact {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: var(--border-radius);
+}
+
+.book-cover-small {
+  width: 80px;
+  margin-right: 20px;
+}
+
+.book-cover-small img {
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.book-details-compact h2 {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.reviews-count {
+  margin-bottom: 20px;
+  color: var(--light-text);
+}
+
+.view-more-reviews {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* ページネーション */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.pagination-info {
+  margin-right: 15px;
+  color: var(--light-text);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-link,
+.pagination-prev,
+.pagination-next {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 0 3px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--text-color);
+  background-color: #f5f5f5;
+  transition: background-color 0.3s;
+}
+
+.pagination-link:hover,
+.pagination-prev:hover,
+.pagination-next:hover {
+  background-color: #e0e0e0;
+}
+
+.pagination-link.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+@media (max-width: 480px) {
+  .pagination {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .pagination-info {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
+
+/* stat-cardをリンクにするためのスタイル */
+.stat-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.stat-card-link .stat-card {
+  transition: all 0.3s ease;
+  position: relative;
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+
+.stat-card-link:hover .stat-card {
+  border-color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.stat-card-link .stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent 0%, transparent 50%, rgba(125, 76, 43, 0.1) 50%, rgba(125, 76, 43, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card-link:hover .stat-card::before {
+  opacity: 1;
+}
+
+.stat-card-link .stat-card h3 {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.stat-card-link:hover .stat-card h3 {
+  color: var(--primary-color);
+}
+
+.stat-card-link .stat-card .stat-value {
+  font-weight: bold;
+  font-size: 1.5rem;
+  position: relative;
+}
+
+.stat-card-link:hover .stat-card .stat-value {
+  color: var(--primary-color);
+}
+
+.stat-card-link .stat-card::after {
+  content: '本棚を見る →';
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.3s ease;
+}
+
+.stat-card-link:hover .stat-card::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* フォローとフォロワーのリンク用スタイル */
+.following-link .stat-card::after {
+  content: 'フォロー一覧 →';
+}
+
+.followers-link .stat-card::after {
+  content: 'フォロワー一覧 →';
+}
+
+/* ユーザーリスト */
+.user-list-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.user-list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
 }
 
-.bookshelf-filters {
-  margin-bottom: 20px;
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
-.category-filter {
+.user-card {
+  background-color: white;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.user-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.user-card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+}
+
+.user-card-link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--text-color);
+  flex: 1;
+}
+
+.user-avatar.large {
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.user-info h3 {
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.user-bio {
+  margin-bottom: 10px;
+  color: var(--light-text);
+  font-size: 0.9rem;
+}
+
+.user-books-count {
+  font-size: 0.9rem;
+  color: var(--light-text);
+}
+
+.user-actions {
+  margin-top: 15px;
+  align-self: flex-start;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.empty-list {
+  text-align: center;
+  padding: 50px 0;
+  color: var(--light-text);
+}
+
+/* 検索結果の書籍カードリンク */
+.book-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.book-card-link:hover {
+  transform: translateY(-3px);
+}
+
+.book-card-link:hover .book-title {
+  color: var(--primary-color);
+}
+
+.search-result {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-result .book-actions {
+  margin-top: auto;
+  padding: 0 12px 12px;
+}
+
+/* おすすめの本棚セクション */
+.recommended-section {
+  margin: 40px auto;
+  padding: 30px;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  max-width: 1200px;
+}
+
+.recommended-section h2 {
+  margin-bottom: 25px;
+  color: var(--primary-color);
+  text-align: center;
+  font-size: 1.8rem;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.recommended-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: var(--secondary-color);
+}
+
+.similar-users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.similar-user-card {
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.similar-user-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.similar-user-link {
+  display: flex;
+  padding: 20px;
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+.similar-user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin-right: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.similar-user-info {
+  flex: 1;
+}
+
+.similar-user-info h3 {
+  margin-bottom: 10px;
+  color: var(--primary-color);
+  font-size: 1.2rem;
+}
+
+.common-books {
+  color: var(--accent-color);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
 }
 
-.category-filter label {
-  margin-right: 10px;
+.common-books::before {
+  content: '\f02d';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  margin-right: 8px;
+  font-size: 0.9rem;
 }
 
-.category-filter select {
-  padding: 5px 10px;
-  border-radius: var(--border-radius);
-  border: 1px solid #ddd;
+.total-books {
+  color: var(--light-text);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
 }
 
-/* 発見ページ */
-.discover-container {
-  background-color: white;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  padding: 30px;
-}
-
-.discover-section {
-  margin-bottom: 40px;
-}
-
-.discover-section h2 {
-  margin-bottom: 20px;
-  border-bottom: 2px solid var(--secondary-color);
-  padding-bottom: 5px;
+.total-books::before {
+  content: '\f5da';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  margin-right: 8px;
+  font-size: 0.9rem;
 }
 
 .no-recommendations {
   text-align: center;
   padding: 30px;
-  background-color: #f5f5f5;
-  border-radius: var(--border-radius);
-}
-
-/* プロフィール編集 */
-.edit-profile-container {
-  max-width: 800px;
-  margin: 0 auto;
-  background-color: white;
-  padding: 30px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-}
-
-.edit-profile-container h1 {
-  margin-bottom: 30px;
-}
-
-.form-text {
-  font-size: 0.875rem;
   color: var(--light-text);
-  margin-top: 5px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: var(--border-radius);
+  margin: 20px 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
 
-/* インラインフォーム */
-.inline-form {
-  display: inline;
-}
-
-/* レスポンシブデザイン */
+/* レスポンシブ対応 */
 @media (max-width: 768px) {
-  .navbar-container {
-    flex-direction: column;
+  .similar-users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 15px;
   }
   
-  .navbar-brand {
-    margin-bottom: 15px;
+  .similar-user-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+    margin-right: 15px;
   }
   
-  .navbar-nav {
-    flex-wrap: wrap;
-    justify-content: center;
+  .similar-user-link {
+    padding: 15px;
   }
   
-  .nav-item {
-    margin: 5px 10px;
-  }
-  
-  .book-header {
-    grid-template-columns: 1fr;
-  }
-  
-  .book-header .book-cover {
-    margin: 0 auto 20px;
-  }
-  
-  .book-content {
-    grid-template-columns: 1fr;
-  }
-  
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .profile-avatar {
-    margin: 0 auto 20px;
-  }
-  
-  .profile-stats {
-    grid-template-columns: 1fr;
+  .similar-user-info h3 {
+    font-size: 1.1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .hero-buttons {
-    flex-direction: column;
-  }
-  
-  .search-input {
-    flex-direction: column;
-  }
-  
-  .book-grid {
+  .similar-users-grid {
     grid-template-columns: 1fr;
   }
+  
+  .recommended-section {
+    padding: 20px 15px;
+  }
+}
+
+/* プロフィール画面の最近追加した本 */
+.recent-books-container {
+  margin-top: 30px;
+  overflow: hidden;
+}
+
+.recent-books-row {
+  display: flex;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.recent-book-card {
+  flex: 1;
+  min-width: 0;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.recent-book-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.recent-book-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.recent-book-cover {
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  overflow: hidden;
+}
+
+.recent-book-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recent-book-info {
+  padding: 15px;
+}
+
+.recent-book-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--primary-color);
+  /* 2行で省略 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.3;
+  height: 2.6em;
+}
+
+.recent-book-author {
+  font-size: 0.8rem;
+  color: var(--light-text);
+  /* 1行で省略 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-recent-books {
+  text-align: center;
+  padding: 30px;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  color: var(--light-text);
+  margin-top: 25px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 992px) {
+  .recent-books-row {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .recent-book-card {
+    flex: 0 0 calc(33.333% - 10px);
+  }
+}
+
+@media (max-width: 768px) {
+  .recent-book-card {
+    flex: 0 0 calc(50% - 7.5px);
+  }
+  
+  .recent-book-cover {
+    height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .recent-book-card {
+    flex: 0 0 100%;
+  }
+}
+
+/* 本棚ページの改善 - 5列表示 */
+.bookshelf-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.bookshelf-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.bookshelf-header h1 {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-right: 20px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.bookshelf-header h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: var(--secondary-color);
+}
+
+.bookshelf-header p {
+  color: var(--light-text);
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.bookshelf-header .btn {
+  padding: 10px 20px;
+  font-weight: 500;
+}
+
+.bookshelf-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.bookshelf-card {
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.bookshelf-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.bookshelf-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.bookshelf-cover {
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  overflow: hidden;
+  position: relative;
+}
+
+.bookshelf-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 5px;
+  transition: transform 0.3s ease;
+}
+
+.bookshelf-card:hover .bookshelf-cover img {
+  transform: scale(1.05);
+}
+
+.bookshelf-info {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.bookshelf-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--primary-color);
+  /* 2行で省略 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.3;
+  height: 2.6em;
+}
+
+.bookshelf-author {
+  font-size: 0.85rem;
+  color: var(--light-text);
+  margin-bottom: 10px;
+  /* 1行で省略 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bookshelf-actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bookshelf-actions .btn {
+  flex: 1;
+  padding: 8px 0;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.empty-bookshelf {
+  text-align: center;
+  padding: 50px 30px;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  margin-top: 20px;
+}
+
+.empty-bookshelf p {
+  color: var(--light-text);
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.bookshelf-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.bookshelf-filter {
+  padding: 8px 15px;
+  background-color: var(--background-color);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: var(--light-text);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.bookshelf-filter:hover {
+  background-color: rgba(200, 182, 166, 0.2);
+}
+
+.bookshelf-filter.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* 削除ボタンをシンプル化 */
+.remove-book-btn {
+  display: none;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1200px) {
+  .bookshelf-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .bookshelf-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .bookshelf-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .bookshelf-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .bookshelf-cover {
+    height: 160px;
+  }
+}
+
+/* 本棚の星評価表示 */
+.bookshelf-rating {
+  display: flex;
+  align-items: center;
+}
+
+.bookshelf-rating .stars {
+  color: #FFB900;  /* より濃い金色の星 */
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+}
+
+.bookshelf-rating .empty-star {
+  color: #E0E0E0;  /* 薄いグレー */
+}
+
+.bookshelf-rating .rating-value {
+  margin-left: 6px;
+  font-size: 0.85rem;
+  color: #8D6E63;  /* 濃いブラウン */
+  font-weight: 600;
 } 

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - MyBookshelf Share{% endblock %}
+
+{% block content %}
+<div class="user-list-container">
+    <div class="user-list-header">
+        <h1>{{ title }}</h1>
+        <a href="{{ url_for('users.profile', username=user.username) }}" class="btn btn-secondary">プロフィールに戻る</a>
+    </div>
+    
+    {% if users %}
+    <div class="users-grid">
+        {% for user_item in users %}
+        <div class="user-card">
+            <div class="user-card-content">
+                <a href="{{ url_for('users.profile', username=user_item.username) }}" class="user-card-link">
+                    <div class="user-avatar large">{{ user_item.username[0] }}</div>
+                    <div class="user-info">
+                        <h3>{{ user_item.username }}</h3>
+                        {% if user_item.about_me %}
+                        <p class="user-bio">{{ user_item.about_me|truncate(100) }}</p>
+                        {% endif %}
+                        <p class="user-books-count">本棚: {{ user_item.books|length }}冊</p>
+                    </div>
+                </a>
+                
+                {% if current_user.is_authenticated and current_user != user_item %}
+                <div class="user-actions">
+                    {% if current_user.is_following(user_item) %}
+                    <a href="{{ url_for('users.unfollow', username=user_item.username) }}" class="btn btn-sm btn-secondary">フォロー解除</a>
+                    {% else %}
+                    <a href="{{ url_for('users.follow', username=user_item.username) }}" class="btn btn-sm btn-primary">フォローする</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-list">
+        {% if list_type == 'following' %}
+        <p>まだ誰もフォローしていません。</p>
+        {% elif list_type == 'followers' %}
+        <p>まだフォロワーがいません。</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

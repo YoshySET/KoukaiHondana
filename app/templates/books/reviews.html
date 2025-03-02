@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }}のレビュー - MyBookshelf Share{% endblock %}
+
+{% block content %}
+<div class="reviews-container">
+    <div class="reviews-header">
+        <h1>{{ book.title }}のレビュー</h1>
+        <div class="book-info-compact">
+            <div class="book-cover-small">
+                {% if book.thumbnail %}
+                <img src="{{ book.thumbnail }}" alt="{{ book.title }}">
+                {% else %}
+                <div class="no-cover">表紙なし</div>
+                {% endif %}
+            </div>
+            <div class="book-details-compact">
+                <h2>{{ book.title }}</h2>
+                <p class="book-authors">{{ book.authors }}</p>
+                <a href="{{ url_for('books.book_detail', book_id=book.id) }}" class="btn btn-secondary">書籍詳細に戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="reviews-count">
+        <p>全{{ total_reviews }}件のレビュー</p>
+    </div>
+    
+    <div class="all-reviews">
+        <h3>すべてのレビュー</h3>
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <a href="{{ url_for('users.profile', username=review.username) }}" class="reviewer-name">{{ review.username }}</a>
+                    {% if review.rating %}
+                    <div class="stars">{{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}</div>
+                    {% endif %}
+                </div>
+                <div class="review-text">{{ review.review }}</div>
+                <div class="review-date">
+                    {% if review.updated_at %}
+                        {{ review.updated_at.strftime('%Y年%m月%d日') }}
+                    {% else %}
+                        日付不明
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- ページネーション -->
+            {% if total_pages > 1 %}
+            <div class="pagination">
+                <div class="pagination-info">
+                    {{ page }} / {{ total_pages }}ページ
+                </div>
+                <div class="pagination-controls">
+                    {% if page > 1 %}
+                    <a href="{{ url_for('books.book_reviews', book_id=book.id, page=page-1) }}" class="pagination-prev">前へ</a>
+                    {% endif %}
+                    
+                    {% for p in range(max(1, page-2), min(total_pages+1, page+3)) %}
+                    <a href="{{ url_for('books.book_reviews', book_id=book.id, page=p) }}" 
+                       class="pagination-link {% if p == page %}active{% endif %}">{{ p }}</a>
+                    {% endfor %}
+                    
+                    {% if page < total_pages %}
+                    <a href="{{ url_for('books.book_reviews', book_id=book.id, page=page+1) }}" class="pagination-next">次へ</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+        <div class="no-reviews">
+            <p>まだレビューがありません。</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

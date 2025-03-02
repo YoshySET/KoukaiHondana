@@ -21,6 +21,30 @@
     </div>
 </div>
 
+{% if current_user.is_authenticated %}
+<div class="recommended-section">
+    <h2>おすすめの本棚</h2>
+    {% if similar_users %}
+    <div class="similar-users-grid">
+        {% for user, common_count in similar_users %}
+        <div class="similar-user-card">
+            <a href="{{ url_for('users.profile', username=user.username) }}" class="similar-user-link">
+                <div class="similar-user-avatar">{{ user.username[0] }}</div>
+                <div class="similar-user-info">
+                    <h3>{{ user.username }}</h3>
+                    <p class="common-books">共通の本: {{ common_count }}冊</p>
+                    <p class="total-books">本棚: {{ user.books|length }}冊</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-recommendations">まだおすすめの本棚がありません。本を追加して他のユーザーと共通点を見つけましょう！</p>
+    {% endif %}
+</div>
+{% endif %}
+
 <div class="features">
     <div class="feature-card">
         <i class="fas fa-book feature-icon"></i>

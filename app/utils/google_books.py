@@ -17,6 +17,11 @@ def search_books(query, max_results=10):
         for item in data['items']:
             volume_info = item.get('volumeInfo', {})
             
+            # サムネイル画像のURLを取得
+            thumbnail = None
+            if 'imageLinks' in volume_info and 'thumbnail' in volume_info['imageLinks']:
+                thumbnail = volume_info['imageLinks']['thumbnail']
+            
             # 必要な情報を抽出
             book = {
                 'id': item.get('id'),
@@ -27,7 +32,7 @@ def search_books(query, max_results=10):
                 'description': volume_info.get('description', ''),
                 'pageCount': volume_info.get('pageCount', 0),
                 'categories': volume_info.get('categories', []),
-                'imageLinks': volume_info.get('imageLinks', {}),
+                'thumbnail': thumbnail,
                 'language': volume_info.get('language', ''),
                 'industryIdentifiers': volume_info.get('industryIdentifiers', [])
             }

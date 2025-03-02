@@ -10,14 +10,18 @@ from sqlalchemy import and_
 def profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     
-    # プライバシー設定のチェック
-    can_view = True
-    if user.privacy_setting == 'private' and user != current_user:
-        can_view = False
-    elif user.privacy_setting == 'friends' and (not current_user.is_authenticated or not current_user.is_following(user)):
-        can_view = False
+    # ユーザーの本棚から追加日時が新しい順に最大5冊を取得
+    recent_books = db.session.query(Book, user_books.c.updated_at)\
+        .join(user_books, Book.id == user_books.c.book_id)\
+        .filter(user_books.c.user_id == user.id)\
+        .order_by(user_books.c.updated_at.desc())\
+        .limit(5)\
+        .all()
     
-    return render_template('users/profile.html', user=user, can_view=can_view)
+    # 結果からBookオブジェクトのみを抽出
+    recent_books = [book for book, _ in recent_books]
+    
+    return render_template('users/profile.html', user=user, recent_books=recent_books)
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -42,37 +46,24 @@ def edit_profile():
 def bookshelf(username):
     user = User.query.filter_by(username=username).first_or_404()
     
-    # プライバシー設定のチェック
-    can_view = True
-    if user.privacy_setting == 'private' and user != current_user:
-        can_view = False
-    elif user.privacy_setting == 'friends' and (not current_user.is_authenticated or not current_user.is_following(user)):
-        can_view = False
+    # ユーザーの本と評価情報を取得
+    books_with_ratings = db.session.query(
+        Book, user_books.c.rating
+    ).join(
+        user_books, Book.id == user_books.c.book_id
+    ).filter(
+        user_books.c.user_id == user.id
+    ).all()
     
-    # カテゴリフィルター
-    category = request.args.get('category', 'all')
+    # 本と評価を分離
+    books = []
+    ratings = {}
+    for book, rating in books_with_ratings:
+        books.append(book)
+        if rating:  # 評価がある場合のみ追加
+            ratings[book.id] = rating
     
-    # 本棚データの取得
-    if can_view:
-        if category != 'all':
-            books = Book.query.join(user_books).filter(
-                and_(user_books.c.user_id == user.id, Book.categories.like(f'%{category}%'))
-            ).all()
-        else:
-            books = user.books
-    else:
-        books = []
-    
-    # カテゴリリストの取得
-    categories = set()
-    for book in user.books:
-        if book.categories:
-            for cat in book.categories.split(', '):
-                categories.add(cat)
-    
-    return render_template('users/bookshelf.html', user=user, books=books, 
-                          can_view=can_view, categories=sorted(categories), 
-                          selected_category=category)
+    return render_template('users/bookshelf.html', user=user, books=books, ratings=ratings)
 
 @bp.route('/follow/<username>')
 @login_required
@@ -119,4 +110,24 @@ def discover():
                     break
     
     return render_template('users/discover.html', similar_users=similar_users, 
-                          recommended_books=recommended_books) 
+                          recommended_books=recommended_books)
+
+@bp.route('/<username>/following')
+def following(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    followed_users = user.followed.all()
+    return render_template('users/user_list.html', 
+                          title=f'{user.username}のフォロー', 
+                          user=user,
+                          users=followed_users,
+                          list_type='following')
+
+@bp.route('/<username>/followers')
+def followers(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    followers = user.followers.all()
+    return render_template('users/user_list.html', 
+                          title=f'{user.username}のフォロワー', 
+                          user=user,
+                          users=followers,
+                          list_type='followers') 

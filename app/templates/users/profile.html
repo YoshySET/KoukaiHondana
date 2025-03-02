@@ -13,7 +13,7 @@
             {% endif %}
             <p class="profile-meta">登録日: {{ user.created_at.strftime('%Y年%m月%d日') }}</p>
             
-            {% if user != current_user and current_user.is_authenticated %}
+            {% if current_user.is_authenticated and current_user != user %}
             <div class="profile-actions">
                 {% if current_user.is_following(user) %}
                 <a href="{{ url_for('users.unfollow', username=user.username) }}" class="btn btn-secondary">フォロー解除</a>
@@ -21,7 +21,7 @@
                 <a href="{{ url_for('users.follow', username=user.username) }}" class="btn btn-primary">フォローする</a>
                 {% endif %}
             </div>
-            {% elif user == current_user %}
+            {% elif current_user == user %}
             <div class="profile-actions">
                 <a href="{{ url_for('users.edit_profile') }}" class="btn btn-secondary">プロフィール編集</a>
             </div>
@@ -30,55 +30,59 @@
     </div>
     
     <div class="profile-stats">
-        <div class="stat-card">
-            <div class="stat-value">{{ user.books|length }}</div>
-            <div class="stat-label">登録書籍</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ user.followed.count() }}</div>
-            <div class="stat-label">フォロー中</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ user.followers.count() }}</div>
-            <div class="stat-label">フォロワー</div>
-        </div>
+        <a href="{{ url_for('users.bookshelf', username=user.username) }}" class="stat-card-link">
+            <div class="stat-card">
+                <h3>本棚</h3>
+                <p class="stat-value">{{ user.books|length }}</p>
+            </div>
+        </a>
+        
+        <a href="{{ url_for('users.following', username=user.username) }}" class="stat-card-link following-link">
+            <div class="stat-card">
+                <h3>フォロー</h3>
+                <p class="stat-value">{{ user.followed.count() }}</p>
+            </div>
+        </a>
+        
+        <a href="{{ url_for('users.followers', username=user.username) }}" class="stat-card-link followers-link">
+            <div class="stat-card">
+                <h3>フォロワー</h3>
+                <p class="stat-value">{{ user.followers.count() }}</p>
+            </div>
+        </a>
     </div>
     
-    {% if can_view %}
-    <div class="profile-books">
-        <div class="section-header">
+    <div class="profile-content">
+        <div class="recent-books">
             <h2>最近追加した本</h2>
-            <a href="{{ url_for('users.bookshelf', username=user.username) }}" class="view-all">すべて見る</a>
-        </div>
-        
-        {% if user.books %}
-        <div class="book-grid">
-            {% for book in user.books[:6] %}
-            <div class="book-card">
-                <a href="{{ url_for('books.book_detail', book_id=book.id) }}">
-                    <div class="book-cover">
-                        {% if book.thumbnail %}
-                        <img src="{{ book.thumbnail }}" alt="{{ book.title }}">
-                        {% else %}
-                        <div class="no-cover">表紙なし</div>
-                        {% endif %}
+            {% if recent_books %}
+            <div class="recent-books-container">
+                <div class="recent-books-row">
+                    {% for book in recent_books %}
+                    <div class="recent-book-card">
+                        <a href="{{ url_for('books.book_detail', book_id=book.id) }}" class="recent-book-link">
+                            <div class="recent-book-cover">
+                                {% if book.thumbnail %}
+                                <img src="{{ book.thumbnail }}" alt="{{ book.title }}">
+                                {% else %}
+                                <div class="no-cover">表紙なし</div>
+                                {% endif %}
+                            </div>
+                            <div class="recent-book-info">
+                                <h3 class="recent-book-title">{{ book.title }}</h3>
+                                <p class="recent-book-author">{{ book.authors }}</p>
+                            </div>
+                        </a>
                     </div>
-                    <div class="book-info">
-                        <h3 class="book-title">{{ book.title }}</h3>
-                        <p class="book-authors">{{ book.authors }}</p>
-                    </div>
-                </a>
+                    {% endfor %}
+                </div>
             </div>
-            {% endfor %}
+            {% else %}
+            <div class="no-recent-books">
+                <p>まだ本が登録されていません。</p>
+            </div>
+            {% endif %}
         </div>
-        {% else %}
-        <p class="no-books">まだ本が登録されていません。</p>
-        {% endif %}
     </div>
-    {% else %}
-    <div class="private-profile">
-        <p>このユーザーのプロフィールは非公開に設定されています。</p>
-    </div>
-    {% endif %}
 </div>
 {% endblock %} 

@@ -34,26 +34,104 @@
             {% if current_user.is_authenticated %}
             <div class="book-actions">
                 {% if book in current_user.books %}
-                <a href="{{ url_for('books.review_book', book_id=book.id) }}" class="btn btn-secondary">レビューを書く</a>
-                <form action="{{ url_for('books.remove_book', book_id=book.id) }}" method="post" class="inline-form">
+                <form action="{{ url_for('books.remove_book', book_id=book.id) }}" method="post" class="inline-form book-delete-form" data-book-title="{{ book.title }}">
                     <button type="submit" class="btn btn-danger">本棚から削除</button>
                 </form>
                 {% else %}
-                <a href="{{ url_for('books.add_book', google_id=book.google_id) }}" class="btn btn-primary">本棚に追加</a>
+                <form action="{{ url_for('books.add_book', google_id=book.google_id) }}" method="post" class="inline-form">
+                    <button type="submit" class="btn btn-primary">本棚に追加</button>
+                </form>
                 {% endif %}
             </div>
             {% endif %}
         </div>
     </div>
     
-    <div class="book-content">
-        {% if book.description %}
-        <div class="book-description">
-            <h2>概要</h2>
-            <p>{{ book.description }}</p>
+    <div class="book-reviews-section">
+        {% if current_user.is_authenticated and book in current_user.books %}
+        <div class="user-review-section">
+            <h3>あなたのレビュー</h3>
+            {% if user_review and (user_review.rating or user_review.review) %}
+            <div class="review-card user-review">
+                <div class="review-header">
+                    <div class="review-actions">
+                        <span class="review-visibility">
+                            {% if user_review.is_public %}
+                                <i class="fas fa-globe"></i> 公開
+                            {% else %}
+                                <i class="fas fa-lock"></i> 非公開
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% if user_review.rating %}
+                    <div class="stars">{{ '★' * user_review.rating }}{{ '☆' * (5 - user_review.rating) }}</div>
+                    {% endif %}
+                </div>
+                {% if user_review.review %}
+                <div class="review-text">{{ user_review.review }}</div>
+                {% endif %}
+                <div class="review-meta">
+                    <div class="review-date">
+                        {% if user_review.updated_at %}
+                            {{ user_review.updated_at.strftime('%Y年%m月%d日') }}
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('books.review_book', book_id=book.id) }}" class="btn btn-sm btn-secondary">編集</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="review-card empty-review">
+                <p>まだレビューを書いていません。</p>
+                <a href="{{ url_for('books.review_book', book_id=book.id) }}" class="btn btn-primary">レビューを書く</a>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
         
+        <div class="public-reviews">
+            <h3>直近のレビュー</h3>
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="review-card">
+                    <div class="review-header">
+                        <a href="{{ url_for('users.profile', username=review.username) }}" class="reviewer-name">{{ review.username }}</a>
+                        {% if review.rating %}
+                        <div class="stars">{{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="review-text">{{ review.review }}</div>
+                    <div class="review-date">
+                        {% if review.updated_at %}
+                            {{ review.updated_at.strftime('%Y年%m月%d日') }}
+                        {% else %}
+                            日付不明
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="view-more-reviews">
+                    <a href="{{ url_for('books.book_reviews', book_id=book.id) }}" class="btn btn-secondary">すべてのレビューを見る</a>
+                </div>
+            {% else %}
+            <div class="no-reviews">
+                <p>まだレビューがありません。</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="book-description">
+        <h2>概要</h2>
+        <div class="description-content">
+            {% if book.sanitized_description %}
+            <p>{{ book.sanitized_description | safe }}</p>
+            {% else %}
+            <p>概要はありません。</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="book-details-section">
         <div class="book-details">
             <h2>詳細情報</h2>
             <table class="details-table">
@@ -80,9 +158,9 @@
         
         <div class="book-owners">
             <h2>この本を持っているユーザー</h2>
-            {% if book.users.count() > 0 %}
+            {% if other_users %}
             <div class="user-list">
-                {% for user in book.users %}
+                {% for user in other_users %}
                 <a href="{{ url_for('users.profile', username=user.username) }}" class="user-link">
                     <div class="user-avatar">{{ user.username[0] }}</div>
                     <span>{{ user.username }}</span>
@@ -90,7 +168,7 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p>この本を持っているユーザーはまだいません。</p>
+            <p>この本を持っている他のユーザーはまだいません。</p>
             {% endif %}
         </div>
     </div>

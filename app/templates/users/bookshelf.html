@@ -5,47 +5,46 @@
 {% block content %}
 <div class="bookshelf-container">
     <div class="bookshelf-header">
-        <h1>{{ user.username }}の本棚</h1>
+        <div>
+            <h1>{{ user.username }}の本棚</h1>
+            {% if books %}
+            <p>{{ books|length }}冊の本があります</p>
+            {% endif %}
+        </div>
         {% if user == current_user %}
         <a href="{{ url_for('books.search') }}" class="btn btn-primary">本を追加</a>
         {% endif %}
     </div>
     
-    {% if can_view %}
-    <div class="bookshelf-filters">
-        <div class="category-filter">
-            <label for="category-select">カテゴリ:</label>
-            <select id="category-select" onchange="filterByCategory(this.value)">
-                <option value="all" {% if selected_category == 'all' %}selected{% endif %}>すべて</option>
-                {% for category in categories %}
-                <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-    
     {% if books %}
-    <div class="book-grid">
+    <div class="bookshelf-grid">
         {% for book in books %}
-        <div class="book-card">
-            <a href="{{ url_for('books.book_detail', book_id=book.id) }}">
-                <div class="book-cover">
+        <div class="bookshelf-card">
+            <a href="{{ url_for('books.book_detail', book_id=book.id) }}" class="bookshelf-link">
+                <div class="bookshelf-cover">
                     {% if book.thumbnail %}
                     <img src="{{ book.thumbnail }}" alt="{{ book.title }}">
                     {% else %}
                     <div class="no-cover">表紙なし</div>
                     {% endif %}
                 </div>
-                <div class="book-info">
-                    <h3 class="book-title">{{ book.title }}</h3>
-                    <p class="book-authors">{{ book.authors }}</p>
+                <div class="bookshelf-info">
+                    <h3 class="bookshelf-title">{{ book.title }}</h3>
+                    <p class="bookshelf-author">{{ book.authors }}</p>
                     
-                    {% if user == current_user %}
-                    <div class="book-actions">
-                        <a href="{{ url_for('books.review_book', book_id=book.id) }}" class="btn btn-sm btn-secondary">レビュー</a>
-                        <form action="{{ url_for('books.remove_book', book_id=book.id) }}" method="post" class="inline-form">
-                            <button type="submit" class="btn btn-sm btn-danger">削除</button>
-                        </form>
+                    {% if ratings and book.id in ratings %}
+                    <div class="bookshelf-rating">
+                        <div class="stars">
+                            {% set rating = ratings[book.id] %}
+                            {% for i in range(5) %}
+                                {% if i < rating %}
+                                <i class="fas fa-star"></i>
+                                {% else %}
+                                <i class="far fa-star empty-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="rating-value">{{ ratings[book.id] }}</span>
                     </div>
                     {% endif %}
                 </div>
@@ -54,23 +53,12 @@
         {% endfor %}
     </div>
     {% else %}
-    <div class="no-books">
-        <p>まだ本が登録されていません。</p>
-        {% if user == current_user %}
-        <a href="{{ url_for('books.search') }}" class="btn btn-primary">本を追加する</a>
+    <div class="empty-bookshelf">
+        <p>まだ本棚に本がありません。</p>
+        {% if current_user.is_authenticated and current_user.username == user.username %}
+        <a href="{{ url_for('books.search') }}" class="btn btn-primary">本を探す</a>
         {% endif %}
     </div>
     {% endif %}
-    {% else %}
-    <div class="private-bookshelf">
-        <p>このユーザーの本棚は非公開に設定されています。</p>
-    </div>
-    {% endif %}
 </div>
-
-<script>
-function filterByCategory(category) {
-    window.location.href = "{{ url_for('users.bookshelf', username=user.username) }}" + "?category=" + category;
-}
-</script>
 {% endblock %} 
